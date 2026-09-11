@@ -1,0 +1,5 @@
+scapy
+pyyaml
+pytest
+flask
+flask-cors

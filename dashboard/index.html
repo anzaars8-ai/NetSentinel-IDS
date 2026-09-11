@@ -1,0 +1,809 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Sentinel IDS</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+
+    background:
+        radial-gradient(
+            circle at top left,
+            #172554 0,
+            #020617 45%,
+            #020617 100%
+        );
+
+    color: #e5e7eb;
+    min-height: 100vh;
+}
+
+.container {
+    max-width: 1400px;
+    margin: auto;
+    padding: 32px;
+}
+
+/* HEADER */
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 32px;
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.logo {
+    width: 52px;
+    height: 52px;
+    border-radius: 15px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #06b6d4,
+            #2563eb
+        );
+
+    box-shadow:
+        0 0 30px rgba(6,182,212,.25);
+}
+
+h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+.subtitle {
+    color: #94a3b8;
+    margin-top: 4px;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+
+    padding: 10px 16px;
+
+    border-radius: 30px;
+
+    background: rgba(15,23,42,.8);
+
+    border: 1px solid #1e293b;
+}
+
+.dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: #22c55e;
+
+    box-shadow:
+        0 0 12px #22c55e;
+}
+
+/* CARDS */
+
+.grid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            4,
+            minmax(0, 1fr)
+        );
+
+    gap: 18px;
+
+    margin-bottom: 28px;
+}
+
+.card {
+    background:
+        linear-gradient(
+            145deg,
+            rgba(30,41,59,.92),
+            rgba(15,23,42,.92)
+        );
+
+    border: 1px solid #1e293b;
+
+    border-radius: 18px;
+
+    padding: 22px;
+
+    box-shadow:
+        0 15px 40px rgba(0,0,0,.25);
+
+    transition:
+        transform .2s,
+        border-color .2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    border-color: #334155;
+}
+
+.card-title {
+    color: #94a3b8;
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+}
+
+.value {
+    font-size: 34px;
+    font-weight: 800;
+    margin-top: 10px;
+}
+
+.icon {
+    float: right;
+    font-size: 24px;
+}
+
+/* MAIN */
+
+.panel {
+    background:
+        rgba(15,23,42,.88);
+
+    border: 1px solid #1e293b;
+
+    border-radius: 20px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.3);
+}
+
+.panel-header {
+    padding: 22px 24px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-bottom: 1px solid #1e293b;
+}
+
+.panel-title {
+    font-size: 19px;
+    font-weight: 700;
+}
+
+.live {
+    color: #22c55e;
+    font-size: 13px;
+}
+
+/* TABLE */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: left;
+
+    padding: 15px 20px;
+
+    color: #64748b;
+
+    font-size: 12px;
+
+    text-transform: uppercase;
+
+    letter-spacing: .06em;
+
+    background: #0b1120;
+}
+
+td {
+    padding: 17px 20px;
+
+    border-top: 1px solid #172033;
+
+    font-size: 14px;
+}
+
+tr:hover td {
+    background: rgba(30,41,59,.35);
+}
+
+/* BADGES */
+
+.badge {
+    display: inline-flex;
+
+    padding: 5px 10px;
+
+    border-radius: 20px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    letter-spacing: .04em;
+}
+
+.CRITICAL {
+    color: #fecaca;
+    background: rgba(220,38,38,.18);
+    border: 1px solid rgba(239,68,68,.3);
+}
+
+.HIGH {
+    color: #fed7aa;
+    background: rgba(234,88,12,.18);
+    border: 1px solid rgba(249,115,22,.3);
+}
+
+.MEDIUM {
+    color: #fef08a;
+    background: rgba(202,138,4,.18);
+    border: 1px solid rgba(234,179,8,.3);
+}
+
+.INFO {
+    color: #bae6fd;
+    background: rgba(14,165,233,.18);
+}
+
+/* EMPTY */
+
+.empty {
+    text-align: center;
+
+    padding: 60px 20px;
+
+    color: #64748b;
+}
+
+.empty-icon {
+    font-size: 45px;
+    margin-bottom: 12px;
+}
+
+/* RESPONSIVE */
+
+@media (max-width: 1000px) {
+
+    .grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+
+    .container {
+        padding: 18px;
+    }
+
+    .grid {
+        grid-template-columns: 1fr;
+    }
+
+    .header {
+        align-items: flex-start;
+        gap: 15px;
+        flex-direction: column;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+<div style="display:flex;justify-content:flex-end;margin:15px 0;">
+    <button id="clear-security-events-btn"
+            onclick="clearPreviousSecurityEvents()"
+            style="
+                background:#dc2626;
+                color:white;
+                border:none;
+                padding:10px 18px;
+                border-radius:7px;
+                font-weight:600;
+                font-size:14px;
+                cursor:pointer;
+            ">
+        🗑 Clear Previous Events
+    </button>
+</div>
+
+<script>
+async function clearPreviousSecurityEvents() {
+    if (!confirm(
+        "Clear ALL previous security events?\n\n" +
+        "This removes the stored alerts from the database.\n" +
+        "The IDS will continue running and detect new events."
+    )) {
+        return;
+    }
+
+    const button = document.getElementById("clear-security-events-btn");
+
+    button.disabled = true;
+    button.textContent = "Clearing...";
+
+    try {
+        const response = await fetch("/api/alerts/clear", {
+            method: "POST"
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || !result.success) {
+            throw new Error(result.error || "Clear operation failed");
+        }
+
+        alert("Previous security events cleared successfully.");
+
+        // Reload the dashboard so both alerts and statistics
+        // are fetched again from the now-empty database.
+        window.location.reload();
+
+    } catch (error) {
+        console.error(error);
+        alert("Could not clear security events: " + error.message);
+
+        button.disabled = false;
+        button.textContent = "🗑 Clear Previous Events";
+    }
+}
+</script>
+
+<!-- CLEAR PREVIOUS SECURITY EVENTS -->
+
+
+
+<div class="container">
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="logo">
+            🛡️
+        </div>
+
+        <div>
+
+            <h1>Sentinel IDS</h1>
+
+            <div class="subtitle">
+                Network Intrusion Detection System
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="status">
+
+        <span class="dot"></span>
+
+        <span id="status">
+            SYSTEM ONLINE
+        </span>
+
+    </div>
+
+</header>
+
+
+<!-- STATISTICS -->
+
+<div class="grid">
+
+    <div class="card">
+
+        <span class="icon">🌐</span>
+
+        <div class="card-title">
+            Active Sources
+        </div>
+
+        <div class="value"
+             id="sources">
+            0
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="icon">📡</span>
+
+        <div class="card-title">
+            Packets Captured
+        </div>
+
+        <div class="value"
+             id="packets">
+            0
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="icon">⚡</span>
+
+        <div class="card-title">
+            Traffic
+        </div>
+
+        <div class="value"
+             id="bytes">
+            0 B
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <span class="icon">🚨</span>
+
+        <div class="card-title">
+            Threats Detected
+        </div>
+
+        <div class="value"
+             id="alertCount">
+            0
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ALERT PANEL -->
+
+<div class="panel">
+
+    <div class="panel-header">
+
+        <div class="panel-title">
+            Security Events
+        </div>
+
+        <div class="live">
+            ● LIVE MONITORING
+        </div>
+
+    </div>
+
+
+    <div class="table-wrap">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>Time</th>
+
+                    <th>Threat</th>
+
+                    <th>Severity</th>
+
+                    <th>Source</th>
+
+                    <th>Destination</th>
+
+                    <th>Protocol</th>
+
+                    <th>Details</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody id="alertTable">
+
+                <tr>
+
+                    <td
+                        colspan="7"
+                        class="empty"
+                    >
+
+                        <div class="empty-icon">
+                            🛡️
+                        </div>
+
+                        No threats detected
+
+                    </td>
+
+                </tr>
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+function formatBytes(bytes) {
+
+    if (bytes < 1024)
+        return bytes + " B";
+
+    if (bytes < 1024 * 1024)
+        return (bytes / 1024).toFixed(1) + " KB";
+
+    if (bytes < 1024 * 1024 * 1024)
+        return (bytes / 1024 / 1024).toFixed(1) + " MB";
+
+    return (
+        bytes /
+        1024 /
+        1024 /
+        1024
+    ).toFixed(1) + " GB";
+}
+
+
+function escapeHtml(value) {
+
+    const div =
+        document.createElement("div");
+
+    div.textContent =
+        value ?? "";
+
+    return div.innerHTML;
+}
+
+
+async function updateDashboard() {
+
+    try {
+
+        const statsResponse =
+            await fetch(
+                "/api/stats"
+            );
+
+        const stats =
+            await statsResponse.json();
+
+
+        document.getElementById(
+            "sources"
+        ).textContent =
+            stats.live.active_sources;
+
+
+        document.getElementById(
+            "packets"
+        ).textContent =
+            stats.live.total_packets.toLocaleString();
+
+
+        document.getElementById(
+            "bytes"
+        ).textContent =
+            formatBytes(
+                stats.live.total_bytes
+            );
+
+
+        document.getElementById(
+            "alertCount"
+        ).textContent =
+            stats.db.total.toLocaleString();
+
+
+        const alertResponse =
+            await fetch(
+                "/api/alerts"
+            );
+
+        const alerts =
+            await alertResponse.json();
+
+
+        const table =
+            document.getElementById(
+                "alertTable"
+            );
+
+
+        if (!alerts.length) {
+
+            table.innerHTML = `
+                <tr>
+                    <td
+                        colspan="7"
+                        class="empty"
+                    >
+                        <div class="empty-icon">
+                            🛡️
+                        </div>
+                        No threats detected
+                    </td>
+                </tr>
+            `;
+
+            return;
+        }
+
+
+        table.innerHTML =
+            alerts.map(alert => `
+
+                <tr>
+
+                    <td>
+                        ${escapeHtml(
+                            alert.timestamp
+                        )}
+                    </td>
+
+                    <td>
+                        <strong>
+                            ${escapeHtml(
+                                alert.rule
+                            )}
+                        </strong>
+                    </td>
+
+                    <td>
+                        <span
+                            class="badge ${escapeHtml(
+                                alert.severity
+                            )}"
+                        >
+                            ${escapeHtml(
+                                alert.severity
+                            )}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            alert.src_ip
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            alert.dst_ip
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            alert.proto
+                        )}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(
+                            alert.description
+                        )}
+                    </td>
+
+                </tr>
+
+            `).join("");
+
+    }
+
+    catch (error) {
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "SYSTEM OFFLINE";
+
+        console.error(error);
+    }
+}
+
+
+async function checkHealth() {
+
+    try {
+
+        const response =
+            await fetch(
+                "/api/health"
+            );
+
+        if (response.ok) {
+
+            document.getElementById(
+                "status"
+            ).textContent =
+                "SYSTEM ONLINE";
+        }
+
+    } catch {
+
+        document.getElementById(
+            "status"
+        ).textContent =
+            "SYSTEM OFFLINE";
+    }
+}
+
+
+updateDashboard();
+
+checkHealth();
+
+
+setInterval(
+    updateDashboard,
+    3000
+);
+
+setInterval(
+    checkHealth,
+    5000
+);
+
+</script>
+
+</body>
+
+</html>

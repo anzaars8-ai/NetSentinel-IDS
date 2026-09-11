@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>Network IDS Dashboard</title>
+
+<style>
+
+body {
+    font-family: system-ui, sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    margin: 2rem;
+}
+
+h1 {
+    color: #38bdf8;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns:
+        repeat(auto-fit, minmax(200px, 1fr));
+
+    gap: 1rem;
+
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: #1e293b;
+    border-radius: 8px;
+    padding: 1rem;
+}
+
+.card h3 {
+    margin: 0 0 .5rem;
+
+    font-size: .8rem;
+
+    color: #94a3b8;
+
+    text-transform: uppercase;
+}
+
+.card .val {
+    font-size: 1.6rem;
+
+    font-weight: 700;
+
+    color: #38bdf8;
+}
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+
+    background: #1e293b;
+}
+
+th,
+td {
+    padding: .7rem .8rem;
+
+    text-align: left;
+
+    font-size: .85rem;
+
+    border-bottom:
+        1px solid #334155;
+}
+
+th {
+    background: #334155;
+}
+
+.CRITICAL {
+    color: #ef4444;
+    font-weight: bold;
+}
+
+.HIGH {
+    color: #f97316;
+    font-weight: bold;
+}
+
+.MEDIUM {
+    color: #facc15;
+}
+
+.status {
+    margin-bottom: 1rem;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Network Intrusion Detection System</h1>
+
+<div class="status">
+    <span id="health">Checking IDS...</span>
+</div>
+
+<div class="grid">
+
+    <div class="card">
+        <h3>Active Sources</h3>
+        <div class="val" id="sources">0</div>
+    </div>
+
+    <div class="card">
+        <h3>Total Packets</h3>
+        <div class="val" id="packets">0</div>
+    </div>
+
+    <div class="card">
+        <h3>Total Bytes</h3>
+        <div class="val" id="bytes">0</div>
+    </div>
+
+    <div class="card">
+        <h3>Total Alerts</h3>
+        <div class="val" id="alerts">0</div>
+    </div>
+
+</div>
+
+<h2>Recent Alerts</h2>
+
+<table>
+
+<thead>
+
+<tr>
+    <th>ID</th>
+    <th>Time</th>
+    <th>Rule</th>
+    <th>Severity</th>
+    <th>Source</th>
+    <th>Destination</th>
+    <th>Description</th>
+</tr>
+
+</thead>
+
+<tbody id="alertTable">
+
+<tr>
+    <td colspan="7">No alerts yet</td>
+</tr>
+
+</tbody>
+
+</table>
+
+<script>
+
+async function updateDashboard() {
+
+    try {
+
+        const health =
+            await fetch("/api/health");
+
+        const healthData =
+            await health.json();
+
+        document.getElementById("health")
+            .textContent =
+            "IDS Online";
+
+        const statsResponse =
+            await fetch("/api/stats");
+
+        const stats =
+            await statsResponse.json();
+
+        document.getElementById("sources")
+            .textContent =
+            stats.live.active_sources;
+
+        document.getElementById("packets")
+            .textContent =
+            stats.live.total_packets;
+
+        document.getElementById("bytes")
+            .textContent =
+            stats.live.total_bytes;
+
+        document.getElementById("alerts")
+            .textContent =
+            stats.db.total;
+
+        const alertResponse =
+            await fetch("/api/alerts");
+
+        const alerts =
+            await alertResponse.json();
+
+        const table =
+            document.getElementById("alertTable");
+
+        if (!alerts.length) {
+
+            table.innerHTML =
+                '<tr><td colspan="7">No alerts yet</td></tr>';
+
+            return;
+        }
+
+        table.innerHTML =
+            alerts.map(alert => `
+
+                <tr>
+
+                    <td>${alert.id}</td>
+
+                    <td>${alert.timestamp}</td>
+
+                    <td>${alert.rule}</td>
+
+                    <td class="${alert.severity}">
+                        ${alert.severity}
+                    </td>
+
+                    <td>${alert.src_ip}</td>
+
+                    <td>${alert.dst_ip}</td>
+
+                    <td>${alert.description}</td>
+
+                </tr>
+
+            `).join("");
+
+    }
+
+    catch (error) {
+
+        document.getElementById("health")
+            .textContent =
+            "IDS Offline";
+
+        console.error(error);
+    }
+}
+
+
+updateDashboard();
+
+setInterval(
+    updateDashboard,
+    3000
+);
+
+</script>
+
+</body>
+
+</html>

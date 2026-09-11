@@ -1,0 +1,11 @@
+venv/
+__pycache__/
+.pytest_cache/
+*.pyc
+data/*.db
+
+# Project backups and debugging files
+backups/
+*.backup
+*.before_*
+ids-crash.log

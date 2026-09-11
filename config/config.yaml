@@ -1,0 +1,23 @@
+capture:
+  interface: wlp2s0
+  store_unparsed: false
+  promiscuous: true
+window:
+  seconds: 10
+thresholds:
+  port_scan_unique_ports: 15
+  port_scan_min_syns: 10
+  public_ip_scan_unique_ports: 5
+  public_ip_scan_min_syns: 5
+  horizontal_scan_hosts: 8
+  horizontal_scan_min_syns: 10
+  high_conn_rate: 50
+  high_traffic_bytes: 5000000
+  syn_flood_min_syns: 100
+  public_ips:
+  - 58.84.61.159
+database:
+  path: data/alerts.db
+api:
+  host: 127.0.0.1
+  port: 5000
